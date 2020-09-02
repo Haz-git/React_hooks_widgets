@@ -23,17 +23,23 @@ const Search = () => {
 
             setResults(data.query.search);
         }
-        //500ms timer to prevent api calls per character change.
-        const timeoutId = setTimeout(() => {
-            if (term) {
-                search();
+
+        if (term && !results.length) {
+            //On first load, don't wait 600 ms.
+            search();
+        } else {
+            const timeoutId = setTimeout(() => {
+            //500ms timer to prevent api calls per character change.
+                if (term) {
+                    search();
+                }
+            }, 600);
+
+            return () => {
+            //Resets timer on character change to prevent constant api calls. API call occurs after 600ms.
+                clearTimeout(timeoutId);
             }
-        }, 600);
-
-        return () => {
-            clearTimeout(timeoutId);
-        }
-
+        } 
     }, [term]);
 
     const renderedResults = results.map((result) => {
