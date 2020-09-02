@@ -9,6 +9,7 @@ const Search = () => {
     console.log(results);
 
     useEffect(() => {
+        //Utilizing useEffect() hook to make async request to wiki API
         const search = async () => {
             const { data } = await axios.get('https://en.wikipedia.org/w/api.php', {
                 params: {
@@ -22,10 +23,21 @@ const Search = () => {
 
             setResults(data.query.search);
         }
-        search();
+        //500ms timer to prevent api calls per character change.
+        const timeoutId = setTimeout(() => {
+            if (term) {
+                search();
+            }
+        }, 600);
+
+        return () => {
+            clearTimeout(timeoutId);
+        }
+
     }, [term]);
 
     const renderedResults = results.map((result) => {
+        //Rendering all returned data into a list.
         return (
             <div key={result.pageid} className="item">
                 <div className="right floated content">
@@ -41,6 +53,7 @@ const Search = () => {
                         {result.title}
                     </div>
                     <span dangerouslySetInnerHTML={{ __html: result.snippet }}></span>
+                    ...
                 </div>
             </div>
         )
